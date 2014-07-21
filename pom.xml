@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.mpilone.hazelcastmq</groupId>
+  <artifactId>hazelcastmq-presentation-demo</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>HazelcastMQ Presentation Demo</name>
+  <url>https://github.com/mpilone/hazelcastmq</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+    <hazelcastmq.version>1.1.0</hazelcastmq.version>
+    <slf4j.version>1.7.2</slf4j.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.mpilone.hazelcastmq</groupId>
+      <artifactId>hazelcastmq-stomp</artifactId>
+      <version>${hazelcastmq.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mpilone.hazelcastmq</groupId>
+      <artifactId>hazelcastmq-camel</artifactId>
+      <version>${hazelcastmq.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-stream</artifactId>
+      <version>2.13.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>
