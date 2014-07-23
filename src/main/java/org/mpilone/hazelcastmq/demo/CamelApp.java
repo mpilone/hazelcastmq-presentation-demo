@@ -10,6 +10,7 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.HazelcastInstance;
 
 /**
+ * Demo of using just HazelcastMQ Camel for sending and receiving messages.
  *
  * @author mpilone
  */
@@ -25,21 +26,28 @@ public class CamelApp extends AbstractApp {
 
   @Override
   protected void start() throws Exception {
+    // Create a Hazelcast client.
     hzInstance = HazelcastClient.newHazelcastClient();
 
+    // Create a HazelcastMQ instance.
     HazelcastMQConfig mqConfig = new HazelcastMQConfig();
     mqConfig.setHazelcastInstance(hzInstance);
     mqInstance = HazelcastMQ.
         newHazelcastMQInstance(mqConfig);
 
+    // Create a HazelcastMQ Camel component.
     HazelcastMQCamelConfig mqCamelConfig = new HazelcastMQCamelConfig();
     mqCamelConfig.setHazelcastMQInstance(mqInstance);
     HazelcastMQCamelComponent mqComponent = new HazelcastMQCamelComponent();
     mqComponent.setConfiguration(mqCamelConfig);
 
+    // Create the Camel context and register the component.
     camelContext = new DefaultCamelContext();
     camelContext.addComponent("hazelcastmq", mqComponent);
 
+    // Build the Camel routes. The first route will read from a HazelcastMQ
+    // topic and send the exchange to stdout. The second route will read from
+    // the direct endpoint and send the message to the HazelcastMQ topic.
     camelContext.addRoutes(new RouteBuilder() {
       @Override
       public void configure() {
@@ -51,8 +59,11 @@ public class CamelApp extends AbstractApp {
     });
     camelContext.start();
 
+    // Create a Camel producer that will send an exchange to the direct 
+    // endpoint and then send the hello message.
     ProducerTemplate producer = camelContext.createProducerTemplate();
-    producer.sendBody("direct:demo", "Hello world from the camel app.");
+    producer.sendBody("direct:demo", "Hello world from the " + CamelApp.class.
+        getSimpleName());
     producer.stop();
   }
 

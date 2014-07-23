@@ -2,9 +2,11 @@ package org.mpilone.hazelcastmq.demo;
 
 import org.mpilone.hazelcastmq.core.*;
 
+import com.hazelcast.config.Config;
 import com.hazelcast.core.*;
 
 /**
+ * Demo of using just HazelcastMQ Core for sending and receiving messages.
  *
  * @author mpilone
  */
@@ -21,28 +23,34 @@ public class CoreApp extends AbstractApp {
 
   @Override
   protected void start() {
+    // Create a Hazelcast client.
+    Config config = new Config();
+    config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+    hzInstance = Hazelcast.newHazelcastInstance(config);
 
-    hzInstance = Hazelcast.newHazelcastInstance();
-
+    // Create a HazelcastMQ instance.
     HazelcastMQConfig mqConfig = new HazelcastMQConfig();
     mqConfig.setHazelcastInstance(hzInstance);
-    mqInstance = HazelcastMQ.
-        newHazelcastMQInstance(mqConfig);
+    mqInstance = HazelcastMQ.newHazelcastMQInstance(mqConfig);
 
+    // Create a context for producing and consuming messages.
     mqContext = mqInstance.createContext();
 
-    consumer = mqContext.createConsumer(
-        "/topic/presentation.demo");
+    // Create a consumer on the topic and add a message listener to handle
+    // incoming messages.
+    consumer = mqContext.createConsumer("/topic/presentation.demo");
     consumer.setMessageListener(new HazelcastMQMessageListener() {
       public void onMessage(HazelcastMQMessage msg) {
-        System.out.printf("%s got message %s\n",
-            CoreApp.class.getSimpleName(), msg.getBodyAsString());
+        System.out.
+            printf("%s got message %s\n", CoreApp.class.getSimpleName(),
+                msg.getBodyAsString());
       }
     });
 
-    HazelcastMQProducer producer = mqContext.createProducer();
-    producer.send("/topic/presentation.demo",
-        "Hello world from the core app demo.");
+    // Create a producer and send a hello message to the topic.
+    HazelcastMQProducer producer = mqContext.createProducer(
+        "/topic/presentation.demo");
+    producer.send("Hello world from the " + CoreApp.class.getSimpleName());
   }
 
   @Override
